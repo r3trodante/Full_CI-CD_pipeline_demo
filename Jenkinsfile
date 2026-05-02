@@ -14,28 +14,31 @@ pipeline {
         git branch: 'main', url: 'https://github.com/r3trodante/Full_CI-CD_pipeline_demo.git'
       }
     }
+
     stage('SonarQube Analysis') {
-    		steps {
-        		script {
-            			// Variable definition MUST be inside a script block
-            			def scannerHome = tool 'sonar' 
-            
-            			withSonarQubeEnv('sonar_server') { 
-                		bat """
-                   		 "${scannerHome}\\bin\\sonar-scanner.bat" ^
-                    		-Dsonar.projectKey=demo-check ^
-                    		-Dsonar.projectName="SonarQube Jenkins Demo" ^
-                   		-Dsonar.projectVersion=1.0 ^
-                    		-Dsonar.sources=src/
-				-Dsonar.tests=test/
-				-Dsonar.test.inclusions=**/*.test.js
-                		"""
+        steps {
+            script {
+                // Ensure 'sonar' matches the name in Global Tool Configuration
+                def scannerHome = tool 'sonar' 
+                
+                withSonarQubeEnv('sonar_server') { 
+                    bat """
+                        "${scannerHome}\\bin\\sonar-scanner.bat" ^
+                        -Dsonar.projectKey=demo-check ^
+                        -Dsonar.projectName="SonarQube Jenkins Demo" ^
+                        -Dsonar.projectVersion=1.0 ^
+                        -Dsonar.sources=src/ ^
+                        -Dsonar.tests=test/ ^
+                        -Dsonar.test.inclusions=**/*.test.js
+                    """
+                }
             }
         }
-
+    }
 
     stage('Build Docker Image') {
       steps {
+        // Use %VAR% for environment variables in bat
         bat "docker build -t %IMAGE_NAME% ."
       }
     }
@@ -60,7 +63,12 @@ pipeline {
 
     stage('Deploy Docker Container') {
       steps {
-        bat 'docker run -d -p 80:3000 --name dante-full-cicd-container %DOCKERHUB_REPO%:latest'
+        // Added a cleanup step to remove old container if it exists
+        bat """
+            docker stop dante-full-cicd-container || rem
+            docker rm dante-full-cicd-container || rem
+            docker run -d -p 80:3000 --name dante-full-cicd-container %DOCKERHUB_REPO%:latest
+        """
       }
     }
   }
