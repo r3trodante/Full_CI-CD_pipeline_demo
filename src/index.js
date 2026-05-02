@@ -26,7 +26,7 @@ const server = http.createServer((req, res) => {
       </style>
     </head>
     <body>
-      <h1>Congratulations from EMC Node.js App!! All the Best!</h1>
+      <h1>Success!The Full CI/CD pipeline is in effect and working as intended</h1>
     </body>
     </html>
   `);
