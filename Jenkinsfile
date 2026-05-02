@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     IMAGE_NAME = 'full-node-js-pipeline:latest'
-    DOCKERHUB_CREDENTIALS = 'docker-token'
+    DOCKERHUB_CREDENTIALS = 'docker_token'
     DOCKERHUB_REPO = 'r3trodante/full_cicd_pipleline'
     SONAR_TOKEN = credentials('sonar_key')
   }
