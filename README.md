@@ -1,2 +1,1 @@
-# emc-nodejs-app
-emc-nodejs-app
+Dante's first node JS app using CI/CD pipleine
